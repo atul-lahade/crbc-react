@@ -23,6 +23,10 @@ import dayjs, { Dayjs } from 'dayjs';
 import UserData from '../types/interfaces/model/UserData';
 import axios from 'axios';
 import { executePOST } from '../ExecuteAPI';
+import { MANDATORY_FIELD } from '../types/const/Common';
+import AlertDialog from './AlertDialog';
+import AlertDialogProps from '../types/interfaces/props/AlterDialogProps';
+import { convertDate } from '../types/CommonUtils';
 
 function Copyright(props: any) {
   return (
@@ -41,6 +45,7 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   let userData: UserData = {};
+  const [firstName, setFirstName] = useState('');
 
   const [defaultDate, setDefaultDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -63,6 +68,8 @@ export default function SignUp() {
 
   const accountTypes = [UserType.ADMINISTRATOR, UserType.APPLICANT];
 
+  const [showAlertDialog, setShowAlertDialog] = useState({ open: false } as AlertDialogProps);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const userDetails = new FormData(event.currentTarget);
@@ -79,82 +86,89 @@ export default function SignUp() {
       passportNo: userDetails.get('passportNo')
     });
     if (userDetails.get('userType') === '') {
-      setUserTypeState({ helperText: 'Invalid account type', error: true })
+      setUserTypeState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setUserTypeState({ helperText: '', error: false })
     }
     if (userDetails.get('firstName') === '') {
-      setFirstNameState({ helperText: 'Invalid first name', error: true })
+      setFirstNameState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setFirstNameState({ helperText: '', error: false })
     }
     if (userDetails.get('lastName') === '') {
-      setLastNameState({ helperText: 'Invalid last name', error: true })
+      setLastNameState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setLastNameState({ helperText: '', error: false })
     }
     if (userDetails.get('contactNo') === '') {
-      setContactNoState({ helperText: 'Invalid contact number', error: true })
+      setContactNoState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setContactNoState({ helperText: '', error: false })
     }
-    if (userDetails.get('personal-email') === '' || !emailRegex.test(userDetails.get('personal-email')!.toString())) {
-      setPersonalEmailState({ helperText: 'Invalid personal email address', error: true })
+    if (userDetails.get('personal-email') === '') {
+      setPersonalEmailState({ helperText: MANDATORY_FIELD, error: true })
+    } else if (!emailRegex.test(userDetails.get('personal-email')!.toString())) {
+      setPersonalEmailState({ helperText: "Invalid email address", error: true })
     } else {
       setPersonalEmailState({ helperText: '', error: false })
     }
     if (userDetails.get('password') === '') {
-      setPasswordState({ helperText: 'Invalid password', error: true })
+      setPasswordState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setPasswordState({ helperText: '', error: false })
     }
     if (userDetails.get('nationality') === '') {
-      setNationalityState({ helperText: 'Invalid nationality', error: true })
+      setNationalityState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setNationalityState({ helperText: '', error: false })
     }
     if (userDetails.get('address') === '') {
-      setAddressState({ helperText: 'Invalid address', error: true })
+      setAddressState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setAddressState({ helperText: '', error: false })
     }
     if (userDetails.get('aadharNo') === '') {
-      setAadharState({ helperText: 'Invalid aadhar no', error: true })
+      setAadharState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setAadharState({ helperText: '', error: false })
     }
     if (userDetails.get('passportNo') === '') {
-      setPassportState({ helperText: 'Invalid passport no', error: true })
+      setPassportState({ helperText: MANDATORY_FIELD, error: true })
     } else {
       setPassportState({ helperText: '', error: false })
     }
-    if (userDetails.get('companyName') === '') {
-      setCompanyNameState({ helperText: 'Invalid company name', error: true })
-    } else {
-      setCompanyNameState({ helperText: '', error: false })
+    if (userDetails.get('userType') === UserType.APPLICANT) {
+      if (userDetails.get('companyName') === '') {
+        setCompanyNameState({ helperText: MANDATORY_FIELD, error: true })
+      } else {
+        setCompanyNameState({ helperText: '', error: false })
+      }
+      if (userDetails.get('industry') === '') {
+        setIndustryState({ helperText: MANDATORY_FIELD, error: true })
+      } else {
+        setIndustryState({ helperText: '', error: false })
+      }
+      if (userDetails.get('contactPersonName') === '') {
+        setContactPersonNameState({ helperText: MANDATORY_FIELD, error: true })
+      } else {
+        setContactPersonNameState({ helperText: '', error: false })
+      }
+      if (userDetails.get('contactEmail') === '') {
+        setContactEmailState({ helperText: MANDATORY_FIELD, error: true })
+      } else if (!emailRegex.test(userDetails.get('contactEmail')!.toString())) {
+        setContactEmailState({ helperText: 'Invalid contact email', error: true })
+      } else {
+        setContactEmailState({ helperText: '', error: false })
+      }
+      if (userDetails.get('contactPhone') === '') {
+        setContactPhoneState({ helperText: MANDATORY_FIELD, error: true })
+      } else {
+        setContactPhoneState({ helperText: '', error: false })
+      }
     }
-    if (userDetails.get('industry') === '') {
-      setIndustryState({ helperText: 'Invalid industry name', error: true })
-    } else {
-      setIndustryState({ helperText: '', error: false })
-    }
-    if (userDetails.get('contactPersonName') === '') {
-      setContactPersonNameState({ helperText: 'Invalid contact person name', error: true })
-    } else {
-      setContactPersonNameState({ helperText: '', error: false })
-    }
-    if (userDetails.get('contactEmail') === '' || !emailRegex.test(userDetails.get('contactEmail')!.toString())) {
-      setContactEmailState({ helperText: 'Invalid contact email', error: true })
-    } else {
-      setContactEmailState({ helperText: '', error: false })
-    }
-    if (userDetails.get('contactPhone') === '') {
-      setContactPhoneState({ helperText: 'Invalid contact phone', error: true })
-    } else {
-      setContactPhoneState({ helperText: '', error: false })
-    }
+
     if (!(userTypeState.error || firstNameState.error || lastNameState.error || contactNoState.error || nationalityState.error || aadharState.error || passportState.error || addressState.error || personalEmailState.error || passportState.error)) {
-      if (userDetails.get('userType') == UserType.APPLICANT) {
+      if (userDetails.get('userType') === UserType.APPLICANT) {
         userData = {
           userType: userDetails.get('userType')?.toString(),
           fullName: userDetails.get('firstName')?.toString() + ' ' + userDetails.get('lastName')?.toString(),
@@ -187,7 +201,16 @@ export default function SignUp() {
       }
       try {
         executePOST("http://localhost:8080/api-crbc/sign-up", userData).then((response) => {
-          console.log(response.data.data);
+          console.log(response);
+          if (response.status === 200) {
+            setShowAlertDialog({
+              open: true,
+              heading: "Sign Up Successful",
+              message: "Hi " + userDetails.get('firstName')!.toString() + ", You've successfully signed up.",
+              buttonText: "Go to Sign in",
+              routeLink: "/sign-in"
+            } as AlertDialogProps);
+          }
         });;
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -202,15 +225,8 @@ export default function SignUp() {
     }
   };
 
-  function convertDate(str: string) {
-    var date = new Date(str),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-    return [date.getFullYear(), mnth, day].join("/");
-  }
-
   function handleAccTypeChange(event: SelectChangeEvent<unknown>, child: React.ReactNode): void {
-    if (event.target.value == UserType.APPLICANT) {
+    if (event.target.value === UserType.APPLICANT) {
       setShowApplicantField(true);
     } else {
       setShowApplicantField(false);
@@ -219,6 +235,7 @@ export default function SignUp() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      <AlertDialog open={showAlertDialog.open} heading={showAlertDialog.heading} message={showAlertDialog.message} buttonText={showAlertDialog.buttonText} routeLink={showAlertDialog.routeLink}></AlertDialog>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box

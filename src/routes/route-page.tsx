@@ -10,12 +10,12 @@ const Loadable = (Component: any) => (props: JSX.IntrinsicAttributes) =>
 );
 
 // *  AUTHENTICATION PAGES
-const Login = Loadable(lazy(() => import('../component/SignInSide')));
+const Login = Loadable(lazy(() => import('../component/SignIn')));
 const Register = Loadable(
     lazy(() => import('../component/SignUp'))
 );
 
-const routes: RouteObject[] = [
+const Routes: RouteObject[] = [
     {
         path: 'authentication',
         children: [
@@ -26,10 +26,10 @@ const routes: RouteObject[] = [
             {
                 path: 'register',
                 element: <Register />,
-            },
+            }
         ],
     },
 
 ];
 
-export default routes;
+export default Routes;

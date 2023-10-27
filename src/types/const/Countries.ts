@@ -1,11 +1,7 @@
 export const Countries = [
     { code: "AF", label: "Afghanistan", phone: "93" },
     { code: "AT", label: "Austria", phone: "43" },
-    {
-        code: "AU",
-        label: "Australia",
-        phone: "61"
-    },
+    { code: "AU", label: "Australia", phone: "61" },
     { code: "BD", label: "Bangladesh", phone: "880" },
     { code: "BS", label: "Bahamas", phone: "1-242" },
     { code: "BT", label: "Bhutan", phone: "975" },
