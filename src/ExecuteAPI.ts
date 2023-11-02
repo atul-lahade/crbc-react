@@ -1,5 +1,5 @@
+import { type } from 'os';
 import axios from "axios";
-import ActivityLog from "./types/interfaces/model/ActivityLog";
 
 export async function executePOST(url: string, request: any) {
 
@@ -14,10 +14,10 @@ export async function executePOST(url: string, request: any) {
     return response;
 }
 
-export async function executeGET(url: string, request: any) {
+export async function executeGET(url: string) {
 
     const response = await axios
-        .get<ActivityLog[]>(url, {
+        .get<any>(url, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Basic YWRtaW46YWRtaW4=",

@@ -13,6 +13,16 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Image from '../static/images/login-page.png';
+import { executePOST } from '../ExecuteAPI';
+import SignInData from '../types/interfaces/model/SignInData';
+import axios from 'axios';
+import { EMAIL_REGEX, MANDATORY_FIELD } from '../types/const/Common';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { HttpStatusCode } from '../types/enum/HttpStatusCode';
+import AdminDashboardProps from '../types/interfaces/props/AdminDashboardProps';
+import { UserType } from '../types/enum/UserType';
+import ApplicantDashboardProps from '../types/interfaces/props/ApplicantDashboardProp';
 
 function Copyright(props: any) {
   return (
@@ -31,14 +41,57 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+  const navigation = useNavigate();
+
+  let signInData: SignInData = {};
+  const [mailState, setEmailState] = useState({ helperText: '', error: false });
+  const [passwordState, setPasswordState] = useState({ helperText: '', error: false });
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+    const userDetails = new FormData(event.currentTarget);
+    if (userDetails.get('email') === '') {
+      setEmailState({ helperText: MANDATORY_FIELD, error: true })
+    } else if (!EMAIL_REGEX.test(userDetails.get('email')!.toString())) {
+      setEmailState({ helperText: "Invalid email address", error: true })
+    } else {
+      setEmailState({ helperText: '', error: false })
+    }
+    if (userDetails.get('password') === '') {
+      setPasswordState({ helperText: MANDATORY_FIELD, error: true })
+    } else {
+      setPasswordState({ helperText: '', error: false })
+    }
+    if (!(mailState.error || passwordState.error)) {
+      signInData = {
+        email: userDetails.get('email')!.toString(),
+        password: userDetails.get('password')?.toString()
+      } as SignInData;
+      try {
+        executePOST("http://localhost:8080/api-crbc/sign-in", signInData).then((response) => {
+          if (response.data.status === HttpStatusCode.OK) {
+            if (response.data.data.userType === UserType.ADMINISTRATOR) {
+              let adminDashboardProps: AdminDashboardProps = response.data.data;
+              //console.log(adminDashboardProps);
+              navigation("/admin-dashboard", { state: { adminDashboardProps }, replace: true });
+            } else {
+              let applicantDashboardProps: ApplicantDashboardProps = response.data.data;
+              navigation("/applicant-dashboard", { state: { applicantDashboardProps }, replace: true });
+            }
+          }
+        });;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.log('error message: ', error.message);
+          // 👇️ error: AxiosError<any, any>
+          return error.message;
+        } else {
+          console.log('unexpected error: ', error);
+          return 'An unexpected error occurred';
+        }
+      }
+    };
+  }
 
   return (
     <>
@@ -85,6 +138,8 @@ export default function SignIn() {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  error={mailState.error}
+                  helperText={mailState.helperText}
                 />
                 <TextField
                   margin="normal"
@@ -95,6 +150,8 @@ export default function SignIn() {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  error={passwordState.error}
+                  helperText={passwordState.helperText}
                 />
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
@@ -105,7 +162,6 @@ export default function SignIn() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  href="/dashboard"
                 >
                   Sign In
                 </Button>

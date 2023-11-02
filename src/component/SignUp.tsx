@@ -23,7 +23,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import UserData from '../types/interfaces/model/UserData';
 import axios from 'axios';
 import { executePOST } from '../ExecuteAPI';
-import { MANDATORY_FIELD } from '../types/const/Common';
+import { EMAIL_REGEX, MANDATORY_FIELD } from '../types/const/Common';
 import AlertDialog from './AlertDialog';
 import AlertDialogProps from '../types/interfaces/props/AlterDialogProps';
 import { convertDate } from '../types/CommonUtils';
@@ -48,7 +48,7 @@ export default function SignUp() {
   const [firstName, setFirstName] = useState('');
 
   const [defaultDate, setDefaultDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
   const [showApplicantField, setShowApplicantField] = useState(false);
   const [firstNameState, setFirstNameState] = useState({ helperText: '', error: false });
   const [userTypeState, setUserTypeState] = useState({ helperText: '', error: false });
@@ -107,7 +107,7 @@ export default function SignUp() {
     }
     if (userDetails.get('personal-email') === '') {
       setPersonalEmailState({ helperText: MANDATORY_FIELD, error: true })
-    } else if (!emailRegex.test(userDetails.get('personal-email')!.toString())) {
+    } else if (!EMAIL_REGEX.test(userDetails.get('personal-email')!.toString())) {
       setPersonalEmailState({ helperText: "Invalid email address", error: true })
     } else {
       setPersonalEmailState({ helperText: '', error: false })
@@ -155,7 +155,7 @@ export default function SignUp() {
       }
       if (userDetails.get('contactEmail') === '') {
         setContactEmailState({ helperText: MANDATORY_FIELD, error: true })
-      } else if (!emailRegex.test(userDetails.get('contactEmail')!.toString())) {
+      } else if (!EMAIL_REGEX.test(userDetails.get('contactEmail')!.toString())) {
         setContactEmailState({ helperText: 'Invalid contact email', error: true })
       } else {
         setContactEmailState({ helperText: '', error: false })
