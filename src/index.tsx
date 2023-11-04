@@ -8,6 +8,7 @@ import SignIn from './component/SignIn';
 import AdminDashboard from './component/AdminDashboard';
 import ApplicantDashboard from './component/ApplicantDashboard';
 import Applicants from './component/Applicants';
+import Request from './component/Request';
 
 
 const root = ReactDOM.createRoot(
@@ -20,8 +21,11 @@ root.render(
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/applicant-dashboard" element={<ApplicantDashboard userName={''} userId={0} applicantId={0} />} />
+        <Route path="/applicant-dashboard" element={<ApplicantDashboard />} />
         <Route path="/admin-all-applicants" element={<Applicants />} />
+        <Route path="/admin-all-requests" element={<Request />} />
+        <Route path="/applicant-all-requests" element={<Request />} />
+        <Route path="/admin-new-requests" element={<Request />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

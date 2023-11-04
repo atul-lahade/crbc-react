@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import ApplicantData from "../types/interfaces/model/ApplicantData";
-import { TablePagination, Typography } from "@mui/material";
+import { Button, TablePagination, Typography } from "@mui/material";
 import { useState } from "react";
 
 export default function Applicants() {
@@ -17,6 +17,7 @@ export default function Applicants() {
     const location = useLocation();
     const data = location.state;
     const state = data.applicants;
+    const adminProps = data.adminProps;
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -26,7 +27,7 @@ export default function Applicants() {
     };
 
     function handleClick() {
-        navigate("/admin-dashboard");
+        navigate("/admin-dashboard", { state: { adminDashboardProps: adminProps }, replace: true });
     }
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
@@ -36,7 +37,7 @@ export default function Applicants() {
     return (
         <div>
             <DashboardBar userName={data.userName}></DashboardBar>
-            <button onClick={handleClick}>Go back</button>
+            <Button onClick={handleClick} variant="outlined">Go back</Button>
             <Typography variant="h6" style={{ flexGrow: 1 }} align="center">
                 Applicants Data
             </Typography>

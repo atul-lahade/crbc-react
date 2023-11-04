@@ -72,10 +72,11 @@ export default function SignIn() {
           if (response.data.status === HttpStatusCode.OK) {
             if (response.data.data.userType === UserType.ADMINISTRATOR) {
               let adminDashboardProps: AdminDashboardProps = response.data.data;
-              //console.log(adminDashboardProps);
+              console.log(adminDashboardProps);
               navigation("/admin-dashboard", { state: { adminDashboardProps }, replace: true });
             } else {
               let applicantDashboardProps: ApplicantDashboardProps = response.data.data;
+              //console.log(applicantDashboardProps);
               navigation("/applicant-dashboard", { state: { applicantDashboardProps }, replace: true });
             }
           }

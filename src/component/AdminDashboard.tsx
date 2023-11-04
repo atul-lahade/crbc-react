@@ -15,7 +15,7 @@ import { HttpStatusCode } from "../types/enum/HttpStatusCode";
 import axios from "axios";
 import { CrbcResponse } from "../types/interfaces/CrbcResponse";
 import ApplicantData from "../types/interfaces/model/ApplicantData";
-import ApplicantsProps from "../types/interfaces/props/ApplicantsProps";
+import RequestData from "../types/interfaces/model/RequestData";
 
 export default function AdminDashboard() {
     const location = useLocation();
@@ -25,27 +25,50 @@ export default function AdminDashboard() {
     useEffect(() => {
         setAdminProps(location.state.adminDashboardProps);
     });
-
     const goToNewRequests = () => {
         const req = {
             method: 'GET',
-            url: 'http://localhost:8080/api-crbc/get-new-request',
+            url: 'http://localhost:8080/api-crbc/get-new-request/' + adminProps.administratorId,
             headers: {
                 "Content-Type": "application/json",
                 Accept: 'application/json'
             },
         };
+        axios
+            .request(req)
+            .then(function ({ data }: { data: CrbcResponse<RequestData[]> }) {
+                if (data.status === HttpStatusCode.OK) {
+                    let requestList: RequestData[] = data.data!;
+                    console.log(requestList);
+                    navigation("/admin-new-requests", { state: { userName: adminProps.userName, requests: requestList, adminProps: adminProps }, replace: true });
+                }
+            })
+            .catch(function (error: any) {
+                console.error(error);
+            });
     };
 
     const goToAllRequests = () => {
         const req = {
             method: 'GET',
-            url: 'http://localhost:8080/api-crbc/get-all-request',
+            url: 'http://localhost:8080/api-crbc/get-all-request/' + adminProps.administratorId,
             headers: {
                 "Content-Type": "application/json",
                 Accept: 'application/json'
             },
         };
+        //console.log(req);
+        axios
+            .request(req)
+            .then(function ({ data }: { data: CrbcResponse<RequestData[]> }) {
+                if (data.status === HttpStatusCode.OK) {
+                    let requestList: RequestData[] = data.data!;
+                    navigation("/admin-all-requests", { state: { userName: adminProps.userName, requests: requestList, adminProps: adminProps }, replace: true });
+                }
+            })
+            .catch(function (error: any) {
+                console.error(error);
+            });
     };
 
     const goToAllApplicants = async () => {
@@ -63,7 +86,7 @@ export default function AdminDashboard() {
             .then(function ({ data }: { data: CrbcResponse<ApplicantData[]> }) {
                 if (data.status === HttpStatusCode.OK) {
                     let appl: ApplicantData[] = data.data!;
-                    navigation("/admin-all-applicants", { state: { userName: adminProps.userName, applicants: appl }, replace: true });
+                    navigation("/admin-all-applicants", { state: { userName: adminProps.userName, applicants: appl, adminProps: adminProps }, replace: true });
                 }
             })
             .catch(function (error: any) {
